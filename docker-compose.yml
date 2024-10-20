@@ -11,12 +11,12 @@ services:
     build:
       context: .
       dockerfile: docker/dev/api/Dockerfile
-    command: bash /src/docker/dev/api/run_dev.sh
+    command: bash /src/run_dev.sh
     env_file: config/.env
     ports:
-      - "5000:5000"
+      - "8000:8000"
     volumes:
-      - "./backend:/src/"
+      - "./src:/src/"
     depends_on:
       - db
     restart: always
