@@ -176,3 +176,6 @@ uploads/
 
 # PostgreSQL Backup
 *.pgsql
+
+# Certs
+certs/
