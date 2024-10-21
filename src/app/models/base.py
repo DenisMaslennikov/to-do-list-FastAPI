@@ -5,6 +5,8 @@ from sqlalchemy.orm import as_declarative, declared_attr
 class Base:
     """Класс базового объекта для моделей."""
 
+    __abstract__ = True
+
     @declared_attr
     def __table_args__(cls):
         if "__table_args__" not in cls.__dict__:
