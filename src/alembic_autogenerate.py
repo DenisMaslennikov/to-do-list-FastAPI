@@ -12,7 +12,7 @@ message = sys.argv[1]
 
 # Убедитесь, что ваш путь к конфигурации Alembic (обычно это alembic.ini) правильно указан
 alembic_cfg = AlembicConfig("alembic.ini")
-alembic_cfg.set_main_option("sqlalchemy.url", settings.async_database_uri)
+alembic_cfg.set_main_option("sqlalchemy.url", settings.database_uri)
 
 command.upgrade(alembic_cfg, "head")
 

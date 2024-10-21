@@ -16,22 +16,16 @@ class BaseSettings(PydanticBaseSettings):
     postgres_port: str
     # Корневая директория проекта
     base_dir: Path = Field(default=Path(__file__).resolve().parent)
+    # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
+    reload: bool = False
 
     model_config = SettingsConfigDict()
 
     @property
-    def async_database_uri(self) -> str:
+    def database_uri(self) -> str:
         """Получение асинхронного uri для подключения к базе данных."""
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:"
-            f"{self.postgres_port}/{self.postgres_db}"
-        )
-
-    @property
-    def database_uri(self) -> str:
-        """Получение синхронного uri для подключения к базе данных."""
-        return (
-            f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:"
             f"{self.postgres_port}/{self.postgres_db}"
         )
 
@@ -45,6 +39,7 @@ class ProductionSettings(BaseSettings):
 class DevelopmentSettings(BaseSettings):
     """Конфигурация разработки."""
 
+    reload: bool = True
     pass
 
 
