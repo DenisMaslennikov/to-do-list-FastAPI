@@ -4,15 +4,15 @@ from alembic import command
 from alembic.config import Config as AlembicConfig
 from fastapi import FastAPI
 
-from config import DevelopmentSettings
+from config import settings
 
-settings = DevelopmentSettings()
+
 app = FastAPI()
 
 if __name__ == "__main__":
     alembic_cfg = AlembicConfig("alembic.ini")
 
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.database_uri)
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.async_database_uri)
 
     command.upgrade(alembic_cfg, "head")
 
