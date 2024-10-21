@@ -4,7 +4,7 @@ from alembic import command
 from alembic.config import Config as AlembicConfig
 from fastapi import FastAPI
 
-from config import settings
+from app.core.config import settings
 
 
 app = FastAPI()

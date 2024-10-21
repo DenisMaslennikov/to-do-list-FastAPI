@@ -2,7 +2,7 @@ import sys
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
-from config import settings
+from app.core.config import settings
 
 if len(sys.argv) != 2:
     print("Использование: python alembic_autogenerate.py <сообщение>")

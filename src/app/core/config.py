@@ -15,10 +15,12 @@ class BaseSettings(PydanticBaseSettings):
     postgres_host: str
     postgres_port: str
     # Корневая директория проекта
-    base_dir: Path = Field(default=Path(__file__).resolve().parent)
+    base_dir: Path = Path(__file__).resolve().parent.parent.parent
     # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
     reload: bool = False
-
+    # Пути к приват и паблик ключам
+    private_key_path: Path = base_dir / "certs" / "private_key"
+    public_key_path: Path = base_dir / "certs" / "public_key.pub"
     model_config = SettingsConfigDict()
 
     @property
