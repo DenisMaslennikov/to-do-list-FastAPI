@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from passlib.context import CryptContext
 from sqlalchemy import String, text
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
@@ -10,6 +11,8 @@ from constants import EMAIL_REGEX
 
 if TYPE_CHECKING:
     from app.models import Task
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(Base):
@@ -53,10 +56,10 @@ class User(Base):
         """Сеттер пароля."""
         self._password_hash = self._generate_password_hash(plain_password)
 
-    # def _generate_password_hash(self, plain_password: str) -> str:
-    #     """Генерация хеша пароля с использованием bcrypt."""
-    #     return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    #
-    # def check_password(self, plain_password: str) -> bool:
-    #     """Проверка пароля через сравнение хеша."""
-    #     return bcrypt.checkpw(plain_password.encode("utf-8"), self._password_hash.encode("utf-8"))
+    def _generate_password_hash(self, plain_password: str) -> str:
+        """Генерация хеша пароля с использованием bcrypt."""
+        return pwd_context.hash(plain_password)
+
+    def verify_password(self, plain_password: str) -> bool:
+        """Проверка пароля через сравнение хеша."""
+        return pwd_context.verify(plain_password, self._password_hash)
