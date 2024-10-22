@@ -15,6 +15,8 @@ class DataBaseSettings(BaseModel):
     postgres_host: str
     postgres_port: str
 
+    echo: bool = False
+
     @property
     def database_uri(self):
         return (
