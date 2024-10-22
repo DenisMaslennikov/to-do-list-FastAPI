@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from app.constants import EMAIL_REGEX
 from app.db.models.base import Base
+from app.db.models.mixins import UUIDPrimaryKey
 
 if TYPE_CHECKING:
     from app.db.models import Task
@@ -15,15 +16,10 @@ if TYPE_CHECKING:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class User(Base):
+class User(UUIDPrimaryKey, Base):
     """Модель пользователя."""
 
     __tablename__ = "users"
-    id: Mapped[UUID] = mapped_column(
-        primary_key=True,
-        server_default=text("gen_random_uuid()"),
-        comment="Идентификатор",
-    )
     email: Mapped[str] = mapped_column(String(100), index=True, comment="Почта", unique=True)
     first_name: Mapped[str | None] = mapped_column(String(100), comment="Имя")
     second_name: Mapped[str | None] = mapped_column(String(100), comment="Фамилия")
