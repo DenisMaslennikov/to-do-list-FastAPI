@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 # Регулярное выражение для проверки валидности email
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -13,3 +14,6 @@ MAX_AMOUNT_OF_TASKS_TO_DISPLAY = 1000
 NOT_COMPLETED_TASK_STATUS_ID = 1
 # Идентификатор статуса задачи "Выполнено"
 COMPLETED_TASK_STATUS_ID = 2
+
+# Корневая директория проекта.
+BASE_DIR = Path(__file__).resolve().parent.parent

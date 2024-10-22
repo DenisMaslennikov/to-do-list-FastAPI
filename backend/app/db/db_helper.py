@@ -12,10 +12,12 @@ class DataBaseHelper:
         self,
         db_uri,
         echo: bool = False,
-    ):
+    ) -> None:
         """Инициализирует асинхронный engine и создает фабрику сессий."""
         self.engine: AsyncEngine = create_async_engine(url=db_uri, echo=echo)
-        self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(bind=self.engine)
+        self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
+            bind=self.engine, expire_on_commit=False, autocommit=False, autoflush=False
+        )
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Получение асинхронной сессии."""

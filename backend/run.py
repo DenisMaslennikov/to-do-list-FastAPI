@@ -1,11 +1,11 @@
 import uvicorn
 from alembic import command
 from alembic.config import Config as AlembicConfig
-from fastapi import FastAPI
 
 from app.config import settings
+from app import main_app
 
-app = FastAPI()
+__all__ = ["main_app"]
 
 if __name__ == "__main__":
     alembic_cfg = AlembicConfig("alembic.ini")
@@ -15,4 +15,4 @@ if __name__ == "__main__":
     command.upgrade(alembic_cfg, "head")
 
     # Запуск сервера
-    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=settings.reload)
+    uvicorn.run("run:main_app", host="0.0.0.0", port=8000, reload=settings.reload)
