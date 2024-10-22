@@ -6,11 +6,11 @@ from sqlalchemy import String, text
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from app.models.base import Base
-from constants import EMAIL_REGEX
+from app.constants import EMAIL_REGEX
+from app.db.models.base import Base
 
 if TYPE_CHECKING:
-    from app.models import Task
+    from app.db.models import Task
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -24,15 +24,11 @@ class User(Base):
         server_default=text("gen_random_uuid()"),
         comment="Идентификатор",
     )
-    email: Mapped[str] = mapped_column(
-        String(100), index=True, comment="Почта", unique=True
-    )
+    email: Mapped[str] = mapped_column(String(100), index=True, comment="Почта", unique=True)
     first_name: Mapped[str | None] = mapped_column(String(100), comment="Имя")
     second_name: Mapped[str | None] = mapped_column(String(100), comment="Фамилия")
     middle_name: Mapped[str | None] = mapped_column(String(100), comment="Отчество")
-    username: Mapped[str] = mapped_column(
-        String(100), index=True, comment="Имя пользователя", unique=True
-    )
+    username: Mapped[str] = mapped_column(String(100), index=True, comment="Имя пользователя", unique=True)
     _password_hash: Mapped[str] = mapped_column(comment="Хеш пароля")
 
     tasks: Mapped[list["Task"]] = relationship(back_populates="user")

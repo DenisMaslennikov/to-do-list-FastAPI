@@ -6,10 +6,10 @@ from uuid import UUID
 from sqlalchemy import ForeignKey, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from app.models.base import Base
+from app.db.models.base import Base
 
 if TYPE_CHECKING:
-    from app.models import TaskStatus, User
+    from app.db.models import TaskStatus, User
 
 
 class Task(Base):

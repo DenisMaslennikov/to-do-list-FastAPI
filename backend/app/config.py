@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from pydantic import Field
-from pydantic_settings import BaseSettings as PydanticBaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings as PydanticBaseSettings
+from pydantic_settings import SettingsConfigDict
 
 
 class BaseSettings(PydanticBaseSettings):
@@ -15,7 +15,7 @@ class BaseSettings(PydanticBaseSettings):
     postgres_host: str
     postgres_port: str
     # Корневая директория проекта
-    base_dir: Path = Path(__file__).resolve().parent.parent.parent
+    base_dir: Path = Path(__file__).resolve().parent.parent
     # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
     reload: bool = False
     # Пути к приват и паблик ключам
@@ -53,7 +53,7 @@ class TestingSettings(BaseSettings):
 
 def get_settings():
     """Получение конфигурации в зависимости от переменной окружения."""
-    env = os.getenv("ENV", None)
+    env = os.getenv("ENV", "")
     match env.lower():
         case "development":
             return DevelopmentSettings()

@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.db.models.base import Base
 
 if TYPE_CHECKING:
-    from app.models import Task
+    from app.db.models import Task
 
 
 class TaskStatus(Base):

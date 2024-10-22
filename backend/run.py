@@ -1,11 +1,9 @@
 import uvicorn
-
 from alembic import command
 from alembic.config import Config as AlembicConfig
 from fastapi import FastAPI
 
-from app.core.config import settings
-
+from app.config import settings
 
 app = FastAPI()
 
