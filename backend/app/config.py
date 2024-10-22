@@ -1,68 +1,41 @@
 import os
 from pathlib import Path
 
-from pydantic_settings import BaseSettings as PydanticBaseSettings
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
 
-class BaseSettings(PydanticBaseSettings):
-    """Базовая конфигурация."""
+class DataBaseSettings(BaseModel):
+    """Настройки подключения к базе данных."""
 
-    # Настройки подключения к базе данных
     postgres_db: str
     postgres_password: str
     postgres_user: str
     postgres_host: str
     postgres_port: str
-    # Корневая директория проекта
-    base_dir: Path = Path(__file__).resolve().parent.parent
-    # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
-    reload: bool = False
-    # Пути к приват и паблик ключам
-    private_key_path: Path = base_dir / "certs" / "private_key"
-    public_key_path: Path = base_dir / "certs" / "public_key.pub"
-    model_config = SettingsConfigDict()
 
     @property
-    def database_uri(self) -> str:
-        """Получение асинхронного uri для подключения к базе данных."""
+    def database_uri(self):
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:"
             f"{self.postgres_port}/{self.postgres_db}"
         )
 
 
-class ProductionSettings(BaseSettings):
-    """Продакшен конфигурация."""
+class Settings(BaseSettings):
+    """Конфигурация бекенда."""
 
-    pass
-
-
-class DevelopmentSettings(BaseSettings):
-    """Конфигурация разработки."""
-
+    # Настройки подключения к базе данных
+    db: DataBaseSettings
+    # Корневая директория проекта
+    base_dir: Path = Path(__file__).resolve().parent.parent
+    # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
     reload: bool = True
-    pass
+    # Пути к приват и паблик ключам
+    private_key_path: Path = base_dir / "certs" / "private_key"
+    public_key_path: Path = base_dir / "certs" / "public_key.pub"
+    model_config = SettingsConfigDict(case_sensitive=False, env_prefix="API_", env_nested_delimiter="__")
 
 
-class TestingSettings(BaseSettings):
-    """Конфигурация для тестов."""
-
-    pass
-
-
-def get_settings():
-    """Получение конфигурации в зависимости от переменной окружения."""
-    env = os.getenv("ENV", "")
-    match env.lower():
-        case "development":
-            return DevelopmentSettings()
-        case "testing":
-            return TestingSettings()
-        case "production":
-            return ProductionSettings()
-        case _:
-            raise ValueError("Неправильно задано окружение в файле конфигурации")
-
-
-settings = get_settings()
+settings = Settings()
