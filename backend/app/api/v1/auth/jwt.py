@@ -30,7 +30,7 @@ def create_access_token(user_id: UUID) -> str:
             "sub": str(user_id),
             "token_type": "access",
             "iat": datetime.now(timezone.utc),
-            "exp": datetime.now(timezone.utc) + settings.jwt.access_token_expires_delta
+            "exp": datetime.now(timezone.utc) + settings.jwt.access_token_expires_delta,
         },
         secret=settings.jwt.private_key_path.read_text(encoding="utf-8"),
         algorithm=settings.jwt.jwt_algorithm,
