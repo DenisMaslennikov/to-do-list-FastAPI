@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -48,6 +49,17 @@ class DataBaseSettings(BaseModel):
         )
 
 
+class JWTSettings(BaseModel):
+    """Конфигурация настроек безопасности."""
+
+    # Пути к приват и паблик ключам
+    private_key_path: Path = BASE_DIR / "certs" / "private_key"
+    public_key_path: Path = BASE_DIR / "certs" / "public_key.pub"
+    jwt_algorithm: str = "RS256"
+    access_token_expires_delta: timedelta = timedelta(minutes=5)
+    refresh_token_expires_delta: timedelta = timedelta(days=7)
+
+
 class Settings(BaseSettings):
     """Конфигурация бекенда."""
 
@@ -61,9 +73,9 @@ class Settings(BaseSettings):
     # Структура эндпоинтов API
     api: Api = Api()
 
-    # Пути к приват и паблик ключам
-    private_key_path: Path = BASE_DIR / "certs" / "private_key"
-    public_key_path: Path = BASE_DIR / "certs" / "public_key.pub"
+    # Настройки безопасности
+    jwt: JWTSettings = JWTSettings()
+
     model_config = SettingsConfigDict(case_sensitive=False, env_prefix="API_", env_nested_delimiter="__")
 
 
