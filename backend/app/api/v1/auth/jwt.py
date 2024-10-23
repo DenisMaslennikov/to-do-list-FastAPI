@@ -6,12 +6,13 @@ from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from fastapi import HTTPException, status
 
 from app import settings
 
 
 def _create_token(
-    payload: dict[str, str],
+    payload: dict[str, str | datetime],
     secret: RSAPrivateKey | EllipticCurvePrivateKey | Ed25519PrivateKey | Ed448PrivateKey | str | bytes,
     algorithm: str,
 ) -> str:
@@ -49,3 +50,14 @@ def create_refresh_token(user_id: UUID) -> str:
         secret=settings.jwt.private_key_path.read_text(encoding="utf-8"),
         algorithm=settings.jwt.jwt_algorithm,
     )
+
+
+def decode_token(token: str) -> dict[str, str | datetime]:
+    """Декодирует токен и возвращает его payload."""
+    try:
+        payload = jwt.decode(token, key=settings.jwt.public_key_path, algorithms=[settings.jwt.jwt_algorithm])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    return payload
