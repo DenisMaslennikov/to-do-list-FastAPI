@@ -36,3 +36,9 @@ class JWTTokensPair(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"
+
+
+class RefreshToken(BaseModel):
+    """Refresh токен"""
+
+    refresh_token: str
