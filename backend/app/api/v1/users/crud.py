@@ -1,3 +1,4 @@
+from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.users.schemas import CreateUser
@@ -17,3 +18,10 @@ async def create_user(session: AsyncSession, new_user_data: CreateUser) -> User:
     session.add(user)
     await session.commit()
     return user
+
+
+async def get_user_by_email(session: AsyncSession, email: str) -> User:
+    """Получает пользователя по его email."""
+    stmt = select(User).where(User.email == email)
+    results: Result = await session.execute(stmt)
+    return results.scalar()

@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime, timezone
+from datetime import datetime, timezone
 from uuid import UUID
 
 import jwt
@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from fastapi import HTTPException, status
 
-from app import settings
+from app.config import settings
 
 
 def _create_token(
@@ -33,8 +33,8 @@ def create_access_token(user_id: UUID) -> str:
             "iat": datetime.now(timezone.utc),
             "exp": datetime.now(timezone.utc) + settings.jwt.access_token_expires_delta,
         },
-        secret=settings.jwt.private_key_path.read_text(encoding="utf-8"),
-        algorithm=settings.jwt.jwt_algorithm,
+        secret=settings.jwt.private_key_path.read_bytes(),
+        algorithm=settings.jwt.algorithm,
     )
 
 
@@ -47,15 +47,19 @@ def create_refresh_token(user_id: UUID) -> str:
             "iat": datetime.now(timezone.utc),
             "exp": datetime.now(timezone.utc) + settings.jwt.refresh_token_expires_delta,
         },
-        secret=settings.jwt.private_key_path.read_text(encoding="utf-8"),
-        algorithm=settings.jwt.jwt_algorithm,
+        secret=settings.jwt.private_key_path.read_bytes(),
+        algorithm=settings.jwt.algorithm,
     )
 
 
 def decode_token(token: str) -> dict[str, str | datetime]:
     """Декодирует токен и возвращает его payload."""
     try:
-        payload = jwt.decode(token, key=settings.jwt.public_key_path, algorithms=[settings.jwt.jwt_algorithm])
+        payload = jwt.decode(
+            token,
+            key=settings.jwt.public_key_path.read_bytes(),
+            algorithms=[settings.jwt.algorithm],
+        )
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
     except jwt.InvalidTokenError:

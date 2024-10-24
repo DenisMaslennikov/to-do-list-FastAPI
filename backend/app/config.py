@@ -55,7 +55,7 @@ class JWTSettings(BaseModel):
     # Пути к приват и паблик ключам
     private_key_path: Path = BASE_DIR / "certs" / "private_key"
     public_key_path: Path = BASE_DIR / "certs" / "public_key.pub"
-    jwt_algorithm: str = "RS256"
+    algorithm: str = "RS256"
     access_token_expires_delta: timedelta = timedelta(minutes=5)
     refresh_token_expires_delta: timedelta = timedelta(days=7)
 
