@@ -30,12 +30,25 @@ class ReadUser(BaseUser):
     pass
 
 
-class JWTTokensPair(BaseModel):
+class JWTTokensPairBase(BaseModel):
     """Пара из refresh и access токенов."""
 
     access_token: str
     refresh_token: str
+
+
+class JWTTokensPairWithTokenType(JWTTokensPairBase):
+    """Пара из refresh и access токенов с указанием типа токенов."""
+
+    access_token: str
+    refresh_token: str
     token_type: str = "Bearer"
+
+
+class JWTTokenForValidation:
+    """Токен для валидации."""
+
+    token: str
 
 
 class RefreshToken(BaseModel):
