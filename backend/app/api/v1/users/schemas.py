@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -27,7 +29,7 @@ class CreateUser(BaseUser):
 class ReadUser(BaseUser):
     """Сериализатор пользователя для операций чтения."""
 
-    pass
+    id: UUID
 
 
 class JWTTokensPairBase(BaseModel):
@@ -45,13 +47,19 @@ class JWTTokensPairWithTokenType(JWTTokensPairBase):
     token_type: str = "Bearer"
 
 
-class JWTTokenForValidation:
+class JWTTokenForValidation(BaseModel):
     """Токен для валидации."""
 
     token: str
 
 
 class RefreshToken(BaseModel):
-    """Refresh токен"""
+    """Refresh токен."""
 
     refresh_token: str
+
+
+class TokenValidationResult(BaseModel):
+    """Результат валидации токена."""
+
+    validation_result: bool

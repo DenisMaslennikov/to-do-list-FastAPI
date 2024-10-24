@@ -2,14 +2,20 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.auth.jwt import create_refresh_token, create_access_token
+from app.api.v1.auth.jwt import create_refresh_token, create_access_token, decode_token
 from app.api.v1.dependencies.jwt import user_id_from_refresh_token
-from app.api.v1.dependencies.users import auth_user
+from app.api.v1.dependencies.users import auth_user, get_current_user
 from app.api.v1.users import crud
-from app.api.v1.users.schemas import UserLogin, CreateUser, ReadUser, JWTTokensPairWithTokenType
+from app.api.v1.users.schemas import (
+    UserLogin,
+    CreateUser,
+    ReadUser,
+    JWTTokensPairWithTokenType,
+    TokenValidationResult,
+    JWTTokenForValidation,
+)
 from app.db import db_helper
 from app.db.models import User
 
@@ -34,10 +40,27 @@ async def tokens_refresh(user_id: Annotated[UUID, Depends(user_id_from_refresh_t
     )
 
 
+@router.post("/jwt/validate/")
+async def token_validate(token: JWTTokenForValidation) -> TokenValidationResult:
+    """Валидирует токен."""
+    try:
+        decode_token(token.token)
+    except:
+        return TokenValidationResult(validation_result=False)
+    else:
+        return TokenValidationResult(validation_result=True)
+
+
 @router.post("/register/", response_model=ReadUser)
 async def user_register(
     new_user_data: CreateUser, session: Annotated[AsyncSession, Depends(db_helper.get_session)]
 ) -> User:
     """Создание нового пользователя."""
-    user = await crud.create_user(session=session, new_user_data=new_user_data)
+    user = await crud.create_user_repo(session=session, new_user_data=new_user_data)
+    return user
+
+
+@router.get("/me/", response_model=ReadUser)
+async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
+    """Получает информацию о текущем пользователе"""
     return user
