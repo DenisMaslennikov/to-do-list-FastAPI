@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.util import await_only
 
 from app.api.v1.users.schemas import CreateUser
 from app.db.models import User
@@ -36,3 +37,9 @@ async def get_user_by_id_repo(session: AsyncSession, user_id: UUID, *option) -> 
         stmt = stmt.options(*option)
     results: Result = await session.execute(stmt)
     return results.scalar()
+
+
+async def delete_user_repo(session: AsyncSession, user: User) -> None:
+    """Удаляет пользователя из базы."""
+    await session.delete(user)
+    await session.commit()

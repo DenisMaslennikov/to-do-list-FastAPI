@@ -29,4 +29,7 @@ async def get_current_user(
     session: Annotated[AsyncSession, Depends(db_helper.get_session)],
 ) -> User:
     """Получает текущего пользователя."""
-    return await get_user_by_id_repo(session, user_id=user_id)
+    user = await get_user_by_id_repo(session, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
+    return user
