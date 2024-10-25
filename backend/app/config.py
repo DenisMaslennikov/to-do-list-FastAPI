@@ -69,6 +69,7 @@ class Settings(BaseSettings):
     # base_dir: Path = Path(__file__).resolve().parent.parent
     # Надо ли отслеживать изменения в файлах и перезапускать uvicorn
     reload: bool = True
+    debug: bool
 
     # Структура эндпоинтов API
     api: Api = Api()
