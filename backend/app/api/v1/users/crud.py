@@ -52,7 +52,7 @@ async def get_user_by_email_or_username_repo(
     return results.scalars().first()
 
 
-async def get_user_by_id_repo(session: AsyncSession, user_id: UUID, *option: list[_AbstractLoad]) -> User | None:
+async def get_user_by_id_repo(session: AsyncSession, user_id: UUID, *option: _AbstractLoad) -> User | None:
     """Возвращает пользователя с заданным id."""
     stmt = select(User).where(User.id == user_id)
     if option:

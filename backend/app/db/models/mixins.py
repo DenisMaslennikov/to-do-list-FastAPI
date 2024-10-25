@@ -8,7 +8,7 @@ class UUIDPrimaryKey:
     id: Mapped[UUID] = mapped_column(
         primary_key=True,
         server_default=text("gen_random_uuid()"),
-        default=uuid4(),
+        default=uuid4,
         comment="Идентификатор",
     )
 

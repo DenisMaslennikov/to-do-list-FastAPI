@@ -86,6 +86,7 @@ async def user_register(
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
     },
 )
 async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
@@ -100,6 +101,7 @@ async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
     },
 )
 async def delete_user_me(
@@ -117,6 +119,7 @@ async def delete_user_me(
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
     },
 )
 async def update_user_me(
@@ -144,6 +147,7 @@ async def update_user_me(
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
     },
 )
 async def partial_update_user_me(
