@@ -5,6 +5,7 @@ from uuid import UUID
 
 from sqlalchemy import ForeignKey, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.sql.sqltypes import DATETIME_TIMEZONE
 
 from app.db.models.base import Base
 from app.db.models.mixins import UUIDPrimaryKey
@@ -29,14 +30,15 @@ class Task(UUIDPrimaryKey, Base):
         comment="Идентификатор пользователя",
         index=True,
     )
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), comment="Создана")
+    created_at: Mapped[datetime] = mapped_column(DATETIME_TIMEZONE, server_default=func.now(), comment="Создана")
     updated_at: Mapped[datetime | None] = mapped_column(
+        DATETIME_TIMEZONE,
         server_onupdate=func.now(),
         comment="Обновлена",
         onupdate=partial(datetime.now, tz=timezone.utc),
     )
-    complete_before: Mapped[datetime | None] = mapped_column(comment="Выполнить до")
-    completed_at: Mapped[datetime | None] = mapped_column(comment="Выполнена")
+    complete_before: Mapped[datetime | None] = mapped_column(DATETIME_TIMEZONE, comment="Выполнить до")
+    completed_at: Mapped[datetime | None] = mapped_column(DATETIME_TIMEZONE, comment="Выполнена")
 
     user: Mapped["User"] = relationship(back_populates="tasks")
     task_status: Mapped["TaskStatus"] = relationship(back_populates="tasks")
