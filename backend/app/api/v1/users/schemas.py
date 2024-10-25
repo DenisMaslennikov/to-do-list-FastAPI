@@ -26,6 +26,17 @@ class CreateUser(BaseUser):
     password: str = Field(..., examples=["password"], min_length=8)
 
 
+class UpdateUser(BaseUser):
+    """Сериализатор полного обновления пользователя."""
+
+    password: str = Field(..., examples=["password"], min_length=8)
+
+
+class PartialUpdateUser(BaseUser):
+    email: EmailStr | None = Field(None, examples=["username@example.com"])
+    username: str | None = Field(None, examples=["username"])
+
+
 class ReadUser(BaseUser):
     """Сериализатор пользователя для операций чтения."""
 

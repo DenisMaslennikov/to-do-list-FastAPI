@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
 from sqlalchemy.util import await_only
 
-from app.api.v1.users.schemas import CreateUser
+from app.api.v1.users.schemas import CreateUser, UpdateUser, PartialUpdateUser
 from app.db.models import User
 
 
@@ -36,12 +36,18 @@ async def get_user_by_email_repo(session: AsyncSession, email: str, *option: lis
 
 
 async def get_user_by_email_or_username_repo(
-    session: AsyncSession, email: str, username: str, *option: list[_AbstractLoad]
+    session: AsyncSession,
+    email: str,
+    username: str,
+    *option: list[_AbstractLoad],
+    exclude_user_id: UUID | str = None,
 ) -> User | None:
     """Получает пользователя по его email или username."""
     stmt = select(User).where(or_(User.email == email, User.username == username))
     if option:
         stmt = stmt.options(*option)
+    if exclude_user_id:
+        stmt = stmt.where(User.id != exclude_user_id)
     results: Result = await session.execute(stmt)
     return results.scalars().first()
 
@@ -59,3 +65,14 @@ async def delete_user_repo(session: AsyncSession, user: User) -> None:
     """Удаляет пользователя из базы."""
     await session.delete(user)
     await session.commit()
+
+
+async def update_user_repo(
+    session: AsyncSession, user: User, new_user_data: UpdateUser | PartialUpdateUser, partial: bool = False
+) -> User:
+    """Полное или частичное обновление информации о пользователи."""
+    user_data = new_user_data.model_dump(exclude_unset=partial)
+    for key, value in user_data.items():
+        setattr(user, key, value)
+    await session.commit()
+    return user

@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI) -> None:
     """Жизненный цикл приложения."""
     yield
 
-    db_helper.dispose()
+    await db_helper.dispose()
 
 
 main_app = FastAPI(lifespan=lifespan, debug=settings.debug)

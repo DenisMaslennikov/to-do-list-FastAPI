@@ -18,6 +18,8 @@ from app.api.v1.users.schemas import (
     JWTTokensPairWithTokenType,
     TokenValidationResult,
     JWTTokenForValidation,
+    UpdateUser,
+    PartialUpdateUser,
 )
 from app.db import db_helper
 from app.db.models import User
@@ -94,7 +96,7 @@ async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
 @router.delete(
     "/me/",
     status_code=status.HTTP_204_NO_CONTENT,
-    response_description="Пользователь удален",
+    response_description="User deleted",
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
@@ -106,3 +108,57 @@ async def delete_user_me(
 ) -> None:
     """Удаляет текущего пользователя."""
     await crud.delete_user_repo(session, user)
+
+
+@router.put(
+    "/me/",
+    response_model=ReadUser,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
+        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+    },
+)
+async def update_user_me(
+    new_user_data: UpdateUser,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(db_helper.get_session)],
+) -> User:
+    """Полное обновление информации о пользователе."""
+    user_from_bd = await crud.get_user_by_email_or_username_repo(
+        session,
+        new_user_data.email,
+        new_user_data.username,
+        exclude_user_id=user.id,
+    )
+    if user_from_bd is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or Username already registered")
+    user = await crud.update_user_repo(session, user, new_user_data)
+    return user
+
+
+@router.patch(
+    "/me/",
+    response_model=ReadUser,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
+        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+    },
+)
+async def partial_update_user_me(
+    new_user_data: PartialUpdateUser,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(db_helper.get_session)],
+) -> User:
+    """Частичное обновление информации о пользователе."""
+    user_from_bd = await crud.get_user_by_email_or_username_repo(
+        session,
+        new_user_data.email,
+        new_user_data.username,
+        exclude_user_id=user.id,
+    )
+    if user_from_bd is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or Username already registered")
+    user = await crud.update_user_repo(session, user, new_user_data, partial=True)
+    return user
