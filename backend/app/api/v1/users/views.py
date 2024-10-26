@@ -21,6 +21,7 @@ from app.api.v1.users.schemas import (
     UpdateUser,
     PartialUpdateUser,
 )
+from app.constants import DEFAULT_RESPONSES
 from app.db import db_helper
 from app.db.models import User
 
@@ -85,9 +86,8 @@ async def user_register(
     response_model=ReadUser,
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
-        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
-    },
+    }
+    | DEFAULT_RESPONSES,
 )
 async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
     """Получает информацию о текущем пользователе."""
@@ -100,9 +100,8 @@ async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
     response_description="User deleted",
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
-        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
-    },
+    }
+    | DEFAULT_RESPONSES,
 )
 async def delete_user_me(
     user: Annotated[User, Depends(get_current_user)],
@@ -118,9 +117,8 @@ async def delete_user_me(
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
-        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
-    },
+    }
+    | DEFAULT_RESPONSES,
 )
 async def update_user_me(
     new_user_data: UpdateUser,
@@ -146,9 +144,8 @@ async def update_user_me(
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
         status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
-        status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
-    },
+    }
+    | DEFAULT_RESPONSES,
 )
 async def partial_update_user_me(
     new_user_data: PartialUpdateUser,

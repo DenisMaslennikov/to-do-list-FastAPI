@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from fastapi import status
+
 # Регулярное выражение для проверки валидности email
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
@@ -17,3 +19,9 @@ COMPLETED_TASK_STATUS_ID = 2
 
 # Корневая директория проекта.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Коды ответов по умолчанию.
+DEFAULT_RESPONSES = {
+    status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
+    status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
+}
