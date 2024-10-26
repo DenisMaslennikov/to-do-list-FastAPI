@@ -1,18 +1,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
-from starlette.status import HTTP_404_NOT_FOUND
 
 from app.api.v1.auth.jwt import create_refresh_token, create_access_token, decode_token
 from app.api.v1.dependencies.jwt import user_id_from_refresh_token
 from app.api.v1.dependencies.users import auth_user, get_current_user
 from app.api.v1.users import crud
-from app.api.v1.users.crud import delete_user_repo
 from app.api.v1.users.schemas import (
-    UserLogin,
     CreateUser,
     ReadUser,
     JWTTokensPairWithTokenType,
