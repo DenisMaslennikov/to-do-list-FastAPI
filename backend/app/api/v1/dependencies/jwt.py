@@ -20,7 +20,7 @@ def get_payload_from_refresh_token_from_json(token: RefreshToken) -> dict[str, d
 def user_id_from_refresh_token(payload: Annotated[dict, Depends(get_payload_from_refresh_token_from_json)]) -> UUID:
     """Получает user_id из refresh токена."""
     if payload.get("token_type") != "refresh":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token type must be 'refresh'")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Тип токена должен быть 'refresh'")
     return UUID(payload["sub"])
 
 
@@ -28,7 +28,7 @@ async def get_current_user_id(credentials: Annotated[HTTPAuthorizationCredential
     """Получает User_id из токена"""
     payload = decode_token(credentials.credentials)
     if not payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Некорректный токен")
     if payload["token_type"] != "access":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token type must be 'access'")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Тип токена должен быть 'access'")
     return UUID(payload["sub"])
