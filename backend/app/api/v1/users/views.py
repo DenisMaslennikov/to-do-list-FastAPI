@@ -84,10 +84,7 @@ async def user_register(
 @router.get(
     "/me/",
     response_model=ReadUser,
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-    }
-    | DEFAULT_RESPONSES,
+    responses=DEFAULT_RESPONSES,
 )
 async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
     """Получает информацию о текущем пользователе."""
@@ -97,11 +94,8 @@ async def get_user_me(user: Annotated[User, Depends(get_current_user)]) -> User:
 @router.delete(
     "/me/",
     status_code=status.HTTP_204_NO_CONTENT,
-    response_description="User deleted",
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
-    }
-    | DEFAULT_RESPONSES,
+    response_description="Пользователь удален",
+    responses=DEFAULT_RESPONSES,
 )
 async def delete_user_me(
     user: Annotated[User, Depends(get_current_user)],
@@ -116,7 +110,6 @@ async def delete_user_me(
     response_model=ReadUser,
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
-        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
     }
     | DEFAULT_RESPONSES,
 )
@@ -143,7 +136,6 @@ async def update_user_me(
     response_model=ReadUser,
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Такой email или username уже есть в базе"},
-        status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
     }
     | DEFAULT_RESPONSES,
 )

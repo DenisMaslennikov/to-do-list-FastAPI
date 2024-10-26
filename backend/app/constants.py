@@ -24,4 +24,5 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_RESPONSES = {
     status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"},
     status.HTTP_403_FORBIDDEN: {"description": "Вы не авторизовались"},
+    status.HTTP_404_NOT_FOUND: {"description": "Пользователь не найден в базе данных"},
 }
