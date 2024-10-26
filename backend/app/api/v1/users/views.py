@@ -158,6 +158,9 @@ async def partial_update_user_me(
         exclude_user_id=user.id,
     )
     if user_from_bd is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким email или username ужк зарегистрирован",)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь с таким email или username ужк зарегистрирован",
+        )
     user = await crud.update_user_repo(session, user, new_user_data, partial=True)
     return user
