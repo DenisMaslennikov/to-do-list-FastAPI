@@ -12,6 +12,7 @@ class UserLogin(BaseModel):
 
 class BaseUser(BaseModel):
     """Базовая модель пользователя."""
+
     model_config = ConfigDict(from_attributes=True)
 
     email: EmailStr = Field(..., examples=["username@example.com"])
