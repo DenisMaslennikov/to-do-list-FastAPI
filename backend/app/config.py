@@ -56,7 +56,7 @@ class JWTSettings(BaseModel):
     private_key_path: Path = BASE_DIR / "certs" / "private_key"
     public_key_path: Path = BASE_DIR / "certs" / "public_key.pub"
     algorithm: str = "RS256"
-    access_token_expires_delta: timedelta = timedelta(minutes=5)
+    access_token_expires_delta: timedelta = timedelta(days=1)
     refresh_token_expires_delta: timedelta = timedelta(days=7)
 
 
