@@ -1,13 +1,16 @@
 from datetime import datetime
+from typing import Sequence
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.api.v1.classifiers.schemas import ReadTaskStatus, BaseTaskStatus
 
 
 class BaseTask(BaseModel):
     """Базовая модель задачи."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     title: str = Field(..., max_length=255, min_length=5)
     complete_before: datetime | None = None
@@ -37,7 +40,7 @@ class PaginatedTaskList(BaseModel):
     """Сериализатор пагинации списка задач."""
 
     count: int
-    results: list[ReadTaskList]
+    results: Sequence[ReadTaskList]
 
 
 class CreateTask(BaseTask):
