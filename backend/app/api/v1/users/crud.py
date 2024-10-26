@@ -1,13 +1,10 @@
-from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, Result, or_
+from sqlalchemy import Result, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
-from sqlalchemy.util import await_only
 
-from app.api.v1.users.schemas import CreateUser, UpdateUser, PartialUpdateUser
+from app.api.v1.users.schemas import CreateUser, PartialUpdateUser, UpdateUser
 from app.db.models import User
 
 

@@ -2,8 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings
-from pydantic_settings import SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.constants import BASE_DIR
 
@@ -43,6 +42,7 @@ class DataBaseSettings(BaseModel):
 
     @property
     def database_uri(self):
+        """Свойство для получение db uri."""
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:"
             f"{self.postgres_port}/{self.postgres_db}"

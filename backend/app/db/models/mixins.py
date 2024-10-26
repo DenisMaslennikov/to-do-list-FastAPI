@@ -5,6 +5,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class UUIDPrimaryKey:
+    """UUID первичный ключ для моделей алхимии."""
+
     id: Mapped[UUID] = mapped_column(
         primary_key=True,
         server_default=text("gen_random_uuid()"),
@@ -14,6 +16,8 @@ class UUIDPrimaryKey:
 
 
 class IntPrimaryKey:
+    """Целочисленный первичный ключ для моделей алхимии."""
+
     id: Mapped[int] = mapped_column(
         primary_key=True,
         comment="Идентификатор",

@@ -2,8 +2,8 @@ import uvicorn
 from alembic import command
 from alembic.config import Config as AlembicConfig
 
-from app.config import settings
 from app import main_app
+from app.config import settings
 
 __all__ = ["main_app"]
 

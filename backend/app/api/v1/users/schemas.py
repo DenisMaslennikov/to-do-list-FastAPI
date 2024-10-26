@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserLogin(BaseModel):
@@ -35,6 +35,8 @@ class UpdateUser(BaseUser):
 
 
 class PartialUpdateUser(BaseUser):
+    """Частичное обновление пользователя."""
+
     email: EmailStr | None = Field(None, examples=["username@example.com"])
     username: str | None = Field(None, examples=["username"])
 

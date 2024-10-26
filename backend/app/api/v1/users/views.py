@@ -4,18 +4,18 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.auth.jwt import create_refresh_token, create_access_token, decode_token
+from app.api.v1.auth.jwt import create_access_token, create_refresh_token, decode_token
 from app.api.v1.dependencies.jwt import user_id_from_refresh_token
 from app.api.v1.dependencies.users import auth_user, get_current_user
 from app.api.v1.users import crud
 from app.api.v1.users.schemas import (
     CreateUser,
-    ReadUser,
-    JWTTokensPairWithTokenType,
-    TokenValidationResult,
     JWTTokenForValidation,
-    UpdateUser,
+    JWTTokensPairWithTokenType,
     PartialUpdateUser,
+    ReadUser,
+    TokenValidationResult,
+    UpdateUser,
 )
 from app.constants import DEFAULT_RESPONSES
 from app.db import db_helper
@@ -53,7 +53,7 @@ async def token_validate(token: JWTTokenForValidation) -> TokenValidationResult:
     """Валидирует токен."""
     try:
         decode_token(token.token)
-    except:
+    except HTTPException:
         return TokenValidationResult(validation_result=False)
     else:
         return TokenValidationResult(validation_result=True)

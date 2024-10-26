@@ -3,11 +3,9 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.util import await_only
 
 from app.api.v1.dependencies.jwt import get_current_user_id
 from app.api.v1.users import crud
-from app.api.v1.users.crud import get_user_by_email_repo, get_user_by_id_repo
 from app.api.v1.users.schemas import UserLogin
 from app.db import db_helper
 from app.db.models import User

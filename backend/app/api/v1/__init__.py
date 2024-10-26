@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter  # noqa: I001
 
 from app.api.v1.users import users_router
 from app.api.v1.tasks import tasks_router

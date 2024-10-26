@@ -1,8 +1,7 @@
-from itertools import count
 from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
@@ -21,7 +20,7 @@ async def get_task_by_id_repo(session: AsyncSession, task_id: UUID, *options: _A
 
 
 async def create_task_repo(session: AsyncSession, new_task: CreateTask, user_id: UUID) -> Task:
-    """Создание новой задачи в базе данных"""
+    """Создание новой задачи в базе данных."""
     task = Task(**new_task.model_dump(), user_id=user_id)
     session.add(task)
     await session.commit()

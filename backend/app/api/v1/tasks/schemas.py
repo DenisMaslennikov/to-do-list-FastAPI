@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Sequence
 from uuid import UUID
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from app.api.v1.classifiers.schemas import ReadTaskStatus, BaseTaskStatus
+from app.api.v1.classifiers.schemas import BaseTaskStatus, ReadTaskStatus
 
 
 class BaseTask(BaseModel):

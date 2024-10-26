@@ -3,7 +3,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String, func, text
+from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.sql.sqltypes import DATETIME_TIMEZONE
 

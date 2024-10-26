@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 from fastapi.params import Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from typing_extensions import Annotated
 
 from app.api.v1.auth.jwt import decode_token
@@ -25,7 +25,7 @@ def user_id_from_refresh_token(payload: Annotated[dict, Depends(get_payload_from
 
 
 async def get_current_user_id(credentials: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)]) -> UUID:
-    """Получает User_id из токена"""
+    """Получает User_id из токена."""
     payload = decode_token(credentials.credentials)
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Некорректный токен")
