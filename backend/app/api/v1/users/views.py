@@ -67,7 +67,7 @@ async def token_validate(token: JWTTokenForValidation) -> TokenValidationResult:
     "/register/",
     response_model=ReadUser,
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Пользователь с таким Username или Email уже зарегистрирован"},
+        status.HTTP_400_BAD_REQUEST: {"description": "Пользователь с таким username или email уже зарегистрирован"},
     },
 )
 async def user_register(
@@ -76,7 +76,10 @@ async def user_register(
     """Создание нового пользователя."""
     user_from_bd = await crud.get_user_by_email_or_username_repo(session, new_user_data.email, new_user_data.username)
     if user_from_bd is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or Username already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь с таким email или username ужк зарегистрирован",
+        )
     user = await crud.create_user_repo(session=session, new_user_data=new_user_data)
     return user
 
@@ -126,7 +129,10 @@ async def update_user_me(
         exclude_user_id=user.id,
     )
     if user_from_bd is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or Username already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь с таким email или username ужк зарегистрирован",
+        )
     user = await crud.update_user_repo(session, user, new_user_data)
     return user
 
@@ -152,6 +158,6 @@ async def partial_update_user_me(
         exclude_user_id=user.id,
     )
     if user_from_bd is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or Username already registered")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким email или username ужк зарегистрирован",)
     user = await crud.update_user_repo(session, user, new_user_data, partial=True)
     return user
