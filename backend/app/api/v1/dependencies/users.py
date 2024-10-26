@@ -19,9 +19,9 @@ async def auth_user(
     """Возвращает авторизованного пользователя."""
     user = await crud.get_user_by_email_repo(session, user_credentials.email)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Некорректный email или пароль")
     if not user.verify_password(user_credentials.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Некорректный email или пароль")
     return user
 
 
@@ -32,5 +32,5 @@ async def get_current_user(
     """Получает текущего пользователя."""
     user = await crud.get_user_by_id_repo(session, user_id=user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
     return user
