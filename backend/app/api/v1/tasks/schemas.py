@@ -48,3 +48,9 @@ class CreateTask(BaseTask):
 
     description: str = Field(..., min_length=5)
     task_status_id: int
+
+
+class UpdateTask(CreateTask):
+    """Сериализатор обновления задачи."""
+
+    pass

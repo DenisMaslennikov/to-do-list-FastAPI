@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Sequence
 from uuid import UUID
 
@@ -6,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
 
-from app.api.v1.tasks.schemas import CreateTask
+from app.api.v1.tasks.schemas import CreateTask, UpdateTask
+from app.constants import COMPLETED_TASK_STATUS_ID, NOT_COMPLETED_TASK_STATUS_ID
 from app.db.models import Task
 
 
@@ -61,3 +63,25 @@ async def get_tasks_for_user_repo(
         stmt = stmt.offset(offset)
     results = await session.execute(stmt)
     return results.scalars().all(), count
+
+
+async def delete_task_repo(session: AsyncSession, task: Task) -> None:
+    """Удаление задачи."""
+    await session.delete(task)
+    await session.commit()
+
+
+async def update_task_repo(session: AsyncSession, task: Task, update_task: UpdateTask, partial=False) -> Task:
+    """Обновление задачи."""
+    task_data = update_task.model_dump(exclude_unset=partial)
+    if (
+        task.task_status_id == NOT_COMPLETED_TASK_STATUS_ID
+        and update_task.task_status_id == COMPLETED_TASK_STATUS_ID
+        and update_task.completed_at is None
+    ):
+        task.completed_at = datetime.now(tz=timezone.utc)
+    for key, value in task_data.items():
+        setattr(task, key, value)
+    await session.commit()
+    await session.refresh(task)
+    return task
