@@ -11,6 +11,11 @@ C последующим покрытием тестами и CI/CD посред
 git clone https://github.com/DenisMaslennikov/to-do-list-FastAPI.git
 ```
 - Настроить переменные окружения в папке **config** в файле **.env** используя в качестве шаблона файл **.env.template** в той же папке.
+- Создать RSA ключи для генерации JWT в папке /backend/certs/ например использовав openssl (под Windows можно использовать openssl из состава git расположенного в C:\Program Files\Git\usr\bin\openssl.exe)
+```bash
+openssl genrsa -out private_key 2048
+openssl rsa -pubout -in private_key -out public_key.pub
+```
 - Запустить контейнеры. 
 ```bash 
 docker compose up --build
