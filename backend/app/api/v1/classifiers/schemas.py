@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -10,6 +12,12 @@ class BaseTaskStatus(BaseModel):
 
 
 class ReadTaskStatus(BaseTaskStatus):
-    """Клас статуса задачи для операций чтения."""
+    """Класс статуса задачи для операций чтения."""
 
     id: int
+
+
+class TaskStatusID(BaseModel):
+    """Схема id статуса задачи."""
+
+    id: Literal[1, 2]

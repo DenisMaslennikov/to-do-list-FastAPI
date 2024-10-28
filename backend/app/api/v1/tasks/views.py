@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from app.api.v1.classifiers.schemas import TaskStatusID
 from app.api.v1.dependencies.tasks import get_task_by_id_for_current_user
 from app.api.v1.dependencies.users import get_current_user
 from app.api.v1.tasks import crud
@@ -93,4 +94,19 @@ async def update_task(
 ) -> Task:
     """Полное обновление задачи."""
     task = await crud.update_task_repo(session, task, update_task)
+    return task
+
+
+@router.patch(
+    "/{task_id}",
+    response_model=ReadTask,
+    responses=DEFAULT_RESPONSES | {status.HTTP_404_NOT_FOUND: {"description": "Пользователь или задача не найдены."}},
+)
+async def update_task_status(
+    task_status: TaskStatusID,
+    task: Annotated[Task, Depends(get_task_by_id_for_current_user)],
+    session: Annotated[AsyncSession, Depends(db_helper.get_session)],
+) -> Task:
+    """Обновление статуса задачи."""
+    task = await crud.update_task_status_repo(session, task, task_status)
     return task

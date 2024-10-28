@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.strategy_options import _AbstractLoad
 
+from app.api.v1.classifiers.schemas import TaskStatusID
 from app.api.v1.tasks.schemas import CreateTask, UpdateTask
 from app.constants import COMPLETED_TASK_STATUS_ID, NOT_COMPLETED_TASK_STATUS_ID
 from app.db.models import Task
@@ -73,15 +74,31 @@ async def delete_task_repo(session: AsyncSession, task: Task) -> None:
 
 async def update_task_repo(session: AsyncSession, task: Task, update_task: UpdateTask, partial=False) -> Task:
     """Обновление задачи."""
-    task_data = update_task.model_dump(exclude_unset=partial)
     if (
         task.task_status_id == NOT_COMPLETED_TASK_STATUS_ID
         and update_task.task_status_id == COMPLETED_TASK_STATUS_ID
         and update_task.completed_at is None
     ):
-        task.completed_at = datetime.now(tz=timezone.utc)
+        update_task.completed_at = datetime.now(tz=timezone.utc)
+    task_data = update_task.model_dump(
+        exclude_unset=partial,
+    )
     for key, value in task_data.items():
         setattr(task, key, value)
+    await session.commit()
+    await session.refresh(task)
+    return task
+
+
+async def update_task_status_repo(session: AsyncSession, task: Task, task_status: TaskStatusID) -> Task:
+    """Обновление статуса задачи."""
+    if task.task_status_id == NOT_COMPLETED_TASK_STATUS_ID and task_status.id == COMPLETED_TASK_STATUS_ID:
+        task.completed_at = datetime.now(tz=timezone.utc)
+    if task.task_status_id == COMPLETED_TASK_STATUS_ID and task_status.id == NOT_COMPLETED_TASK_STATUS_ID:
+        task.completed_at = None
+
+    task.task_status_id = task_status.id
+
     await session.commit()
     await session.refresh(task)
     return task
