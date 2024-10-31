@@ -1,0 +1,21 @@
+services:
+  db1test:
+    image: postgres:latest
+    env_file: ./config/.env
+
+  db2test:
+    image: postgres:latest
+    env_file: ./config/.env
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/dev/api/Dockerfile
+    env_file: ./config/.env
+    volumes:
+      - "./backend:/backend/"
+    depends_on:
+      - db1test
+      - db2test
+    entrypoint: []
+    restart: always
