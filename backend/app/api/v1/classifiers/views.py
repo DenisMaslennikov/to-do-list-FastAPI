@@ -9,7 +9,7 @@ from app.api.v1.classifiers.schemas import ReadTaskStatus
 from app.db import db_helper
 from app.db.models import TaskStatus
 
-router = APIRouter()
+router = APIRouter(tags=["classifiers"])
 
 
 @router.get("/task_status/", response_model=Sequence[ReadTaskStatus])
