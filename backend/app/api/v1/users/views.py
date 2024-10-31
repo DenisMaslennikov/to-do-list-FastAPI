@@ -26,6 +26,7 @@ router = APIRouter(tags=["Users"])
 
 @router.post(
     "/jwt/create/",
+    status_code=status.HTTP_201_CREATED,
     responses={status.HTTP_401_UNAUTHORIZED: {"description": "Ошибка авторизации"}},
 )
 async def create_tokens(user: Annotated[User, Depends(auth_user)]) -> JWTTokensPairWithTokenType:
