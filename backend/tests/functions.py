@@ -1,15 +1,12 @@
 import datetime
-import os
 import socket
 import time
 from uuid import UUID
 
 from faker import Faker
-from sqlalchemy import func, make_url, text
-from sqlalchemy.exc import OperationalError, ProgrammingError
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
+from sqlalchemy import func
 from sqlalchemy.orm import Session
-from sqlalchemy.util import await_only
+
 
 from app.constants import COMPLETED_TASK_STATUS_ID
 from app.db.models import TaskStatus, Task
