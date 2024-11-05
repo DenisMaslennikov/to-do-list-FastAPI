@@ -3,12 +3,15 @@ from typing import Generator, AsyncGenerator
 
 import alembic
 import pytest
+import pytest_asyncio
 from alembic import command
 from faker import Faker
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 from httpx import AsyncClient, ASGITransport
 
 from app import main_app
+from app.api.v1.auth.jwt import create_refresh_token, create_access_token
 from app.db.models import User
 from tests.constants import TEST_MIGRATIONS_HOST, TEST_APP_HOST
 from tests.functions import wait_for_port
@@ -17,10 +20,10 @@ from app.db.db_helper import db_helper
 from app.config import settings
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client(session_override) -> Generator[AsyncClient, None, None]:
     """Фикстура клиента для тестов АПИ."""
-    async with AsyncClient(app=main_app, transport=ASGITransport(app=main_app), base_url="http://localhost:8000") as ac:
+    async with AsyncClient(app=main_app, base_url="http://localhost:8000") as ac:
         yield ac
 
 
@@ -52,7 +55,7 @@ def app_database_url() -> str:
     )
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def alembic_engine(migrations_test_container, migration_database_url) -> AsyncEngine:
     """Используется pytest-alembic."""
 
@@ -98,7 +101,7 @@ def migrations(app_database_url, database_test_container):
         raise e
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def engine(app_database_url, migrations) -> AsyncEngine:
     """Создает engine SQLAlchemy для взаимодействия с базой."""
 
@@ -107,8 +110,8 @@ async def engine(app_database_url, migrations) -> AsyncEngine:
     await engine.dispose()
 
 
-@pytest.fixture(scope="function")
-async def db_session(engine) -> AsyncSession:
+@pytest_asyncio.fixture(scope="function")
+async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     """Создает и возвращает сессию базы данных для тестирования."""
 
     async with engine.connect() as connection:
@@ -123,10 +126,11 @@ async def db_session(engine) -> AsyncSession:
         finally:
             await session.close()
             await transaction.rollback()
+            await connection.close()
 
 
-@pytest.fixture(scope="function")
-def session_override(db_session, monkeypatch):
+@pytest_asyncio.fixture
+def session_override(db_session):
     """Подменяет зависимость сессии на тестовую."""
 
     async def get_session_override() -> AsyncGenerator[AsyncSession, None]:
@@ -158,7 +162,7 @@ def user_two_password(faker) -> str:
     return faker.password()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def user_one(db_session, faker, user_one_password) -> User:
     """Фикстура пользователя для тестов."""
 
@@ -175,7 +179,7 @@ async def user_one(db_session, faker, user_one_password) -> User:
     return user
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def user_two(db_session, faker, user_two_password) -> User:
     """Фистура другого пользователя для тестов."""
 
@@ -190,3 +194,35 @@ async def user_two(db_session, faker, user_two_password) -> User:
     db_session.add(user)
     await db_session.commit()
     return user
+
+
+@pytest.fixture
+def refresh_token_user_one(user_one) -> str:
+    """Получение refresh токена для первого пользователя."""
+    return create_refresh_token(user_one.id)
+
+
+@pytest.fixture
+def access_token_user_one(user_one) -> str:
+    """Получение access токена для первого пользователя."""
+    return create_access_token(user_one.id)
+
+
+# @pytest.fixture(scope="session")  # (loop_scope="function", scope="function")
+# def event_loop():
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
+
+
+# @pytest.fixture
+# def anyio_backend():
+#     return "asyncio"
+#
+#
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     # loop = asyncio.get_event_loop_policy().new_event_loop()
+#     # yield loop
+#     # loop.close()
+#     return asyncio.get_event_loop()

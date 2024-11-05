@@ -210,10 +210,11 @@ pythonpath = [
 ]
 
 asyncio_mode="auto"
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 # Исключаем директории с тестами и миграциями из покрытия
 omit = [
     "tests/*",        # Исключаем всю директорию с тестами
-    "alembic/*"    # Исключаем директорию с миграциями Alembic
+    "migrations/*"    # Исключаем директорию с миграциями Alembic
 ]
