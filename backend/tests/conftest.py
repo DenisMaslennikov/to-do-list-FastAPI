@@ -101,7 +101,7 @@ def migrations(app_database_url, database_test_container):
 
 
 @pytest_asyncio.fixture
-async def engine(app_database_url, migrations) -> AsyncEngine:
+async def engine(app_database_url, migrations) -> AsyncGenerator[AsyncEngine, None]:
     """Создает engine SQLAlchemy для взаимодействия с базой."""
 
     engine = create_async_engine(app_database_url)
