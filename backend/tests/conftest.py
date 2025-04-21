@@ -6,7 +6,6 @@ import pytest
 import pytest_asyncio
 from alembic import command
 from faker import Faker
-from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 from httpx import AsyncClient, ASGITransport
 
@@ -21,7 +20,7 @@ from app.config import settings
 
 
 @pytest_asyncio.fixture
-async def client(session_override) -> Generator[AsyncClient, None, None]:
+async def client(session_override) -> AsyncGenerator[AsyncClient, None]:
     """Фикстура клиента для тестов АПИ."""
     async with AsyncClient(app=main_app, base_url="http://localhost:8000") as ac:
         yield ac
@@ -101,7 +100,7 @@ def migrations(app_database_url, database_test_container):
         raise e
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture
 async def engine(app_database_url, migrations) -> AsyncEngine:
     """Создает engine SQLAlchemy для взаимодействия с базой."""
 
@@ -110,7 +109,7 @@ async def engine(app_database_url, migrations) -> AsyncEngine:
     await engine.dispose()
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture
 async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     """Создает и возвращает сессию базы данных для тестирования."""
 
@@ -119,7 +118,6 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
         session = AsyncSession(bind=connection, join_transaction_mode="create_savepoint", expire_on_commit=False)
         try:
             yield session
-            await session.commit()
         except Exception:
             await session.rollback()
             raise
@@ -129,7 +127,7 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
             await connection.close()
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 def session_override(db_session):
     """Подменяет зависимость сессии на тестовую."""
 
@@ -138,6 +136,7 @@ def session_override(db_session):
 
         yield db_session
 
+    # monkeypatch.setattr("app.api.v1.users.views.db_helper.get_session", get_session_override)
     main_app.dependency_overrides[db_helper.get_session] = get_session_override
 
 
@@ -206,6 +205,14 @@ def refresh_token_user_one(user_one) -> str:
 def access_token_user_one(user_one) -> str:
     """Получение access токена для первого пользователя."""
     return create_access_token(user_one.id)
+
+
+# @pytest.fixture(scope="session", autouse=True)
+# def event_loop():
+#     loop = asyncio.new_event_loop()
+#     asyncio.set_event_loop(loop)
+#     yield loop
+#     loop.close()
 
 
 # @pytest.fixture(scope="session")  # (loop_scope="function", scope="function")
